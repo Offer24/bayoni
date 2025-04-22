@@ -1,0 +1,600 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل التسجيل لأستاذ طلال</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3e4c7);
+            color: #333;
+            line-height: 1.6;
+        }
+        .hero-section {
+            background: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1920') no-repeat center center/cover;
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 100, 0, 0.6);
+        }
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-section p {
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .section-title {
+            color: #006400;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            width: 100px;
+            height: 4px;
+            background: #FFD700;
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+        }
+        .requirements-section .accordion-button {
+            background: #006400;
+            color: white;
+            font-weight: bold;
+        }
+        .requirements-section .accordion-button:not(.collapsed) {
+            background: #004d00;
+            color: white;
+        }
+        .requirements-section .accordion-body {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .table-section table {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        .table-section th, .table-section td {
+            vertical-align: middle;
+            text-align: right;
+        }
+        .table-section th {
+            background: #006400;
+            color: white;
+        }
+        .table-section a {
+            color: #006400;
+            text-decoration: none;
+        }
+        .table-section a:hover {
+            text-decoration: underline;
+        }
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #006400;
+            right: 50px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-right: 80px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 46px;
+            width: 12px;
+            height: 12px;
+            background: #FFD700;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-icon {
+            position: absolute;
+            right: 20px;
+            top: 0;
+            font-size: 2rem;
+            color: #006400;
+        }
+        .timeline-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .timeline-content:hover {
+            transform: translateY(-5px);
+        }
+        .timeline-content h3 {
+            color: #006400;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .timeline-content ul {
+            padding-right: 20px;
+        }
+        .timeline-content ul li {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background: #006400;
+            border: none;
+            padding: 8px 20px;
+            font-size: 1rem;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: #004d00;
+        }
+        .footer {
+            background: #006400;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .animate-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .animate-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .timeline::before {
+                right: 30px;
+            }
+            .timeline-item {
+                padding-right: 60px;
+            }
+            .timeline-item::before {
+                right: 26px;
+            }
+            .timeline-icon {
+                right: 0;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>مرحبًا أستاذ طلال!</h1>
+            <p>دليلك الشخصي للتسجيل في دليل الأعمال السعودي ومعرض البناء السعودي بسهولة وسرعة</p>
+            <a href="#requirements" class="btn btn-primary mt-3">ابدأ الآن</a>
+        </div>
+    </section>
+
+    <!-- Requirements Section -->
+    <section id="requirements" class="py-5 requirements-section">
+        <div class="container">
+            <h2 class="section-title">المتطلبات العامة للتسجيل، أستاذ طلال</h2>
+            <p class="text-center mb-4">أستاذ طلال، لضمان تسجيل ناجح، إليك المتطلبات الأساسية التي ستحتاج إلى تجهيزها:</p>
+            <div class="accordion" id="requirementsAccordion">
+                <div class="accordion-item animate-section">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            متطلبات التسجيل في دليل الأعمال السعودي
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#requirementsAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> هوية وطنية أو إقامة سارية المفعول.</li>
+                                <li><i class="fas fa-check-circle"></i> سجل تجاري ساري (إذا كنت تسجل منشأة قائمة).</li>
+                                <li><i class="fas fa-check-circle"></i> عنوان وطني مفعل (يمكنك الحصول عليه عبر splonline.com.sa).</li>
+                                <li><i class="fas fa-check-circle"></i> حساب بنكي تجاري مفعل.</li>
+                                <li><i class="fas fa-check-circle"></i> بيانات التواصل (رقم هاتف، بريد إلكتروني).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item animate-section">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            متطلبات التسجيل كعارض في معرض البناء السعودي
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#requirementsAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> سجل تجاري ساري المفعول.</li>
+                                <li><i class="fas fa-check-circle"></i> وثائق المنتجات (مثل شهادة المنشأ).</li>
+                                <li><i class="fas fa-check-circle"></i> تصميم الجناح (يمكن التعاقد مع شركة تصميم).</li>
+                                <li><i class="fas fa-check-circle"></i> دفع رسوم المشاركة بناءً على حجم الجناح.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item animate-section">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                            متطلبات التسجيل كزائر في معرض البناء السعودي
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#requirementsAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> بيانات شخصية (الاسم، البريد الإلكتروني، رقم الهاتف).</li>
+                                <li><i class="fas fa-check-circle"></i> دفع رسوم الدخول (إن وجدت).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Table Section -->
+    <section class="py-5 table-section">
+        <div class="container">
+            <h2 class="section-title">روابط التسجيل المباشرة لك، أستاذ طلال</h2>
+            <p class="text-center mb-4">أستاذ طلال، هذه الروابط ستساعدك على بدء التسجيل مباشرة في المنصات المختلفة:</p>
+            <table class="table table-bordered animate-section">
+                <thead>
+                    <tr>
+                        <th>اسم المنصة</th>
+                        <th>رابط التسجيل</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Business Wallet</td>
+                        <td><a href="https://bwallet.com.sa/Account/RegisterKyan" target="_blank">التسجيل</a></td>
+                        <td>منصة لإدراج شركتك في دليل الأعمال مع خدمات تسويقية.</td>
+                    </tr>
+                    <tr>
+                        <td>نموذج التسجيل في دليل الأعمال | منشآت</td>
+                        <td><a href="https://www.monshaat.gov.sa/ar/forms/BD" target="_blank">التسجيل</a></td>
+                        <td>نموذج رسمي من منشآت لتسجيل منشأتك بسهولة.</td>
+                    </tr>
+                    <tr>
+                        <td>بوابة الدخول الموحد - المركز السعودي للأعمال</td>
+                        <td><a href="https://www.saudibusiness.gov.sa/Identity/Account/Login" target="_blank">التسجيل</a></td>
+                        <td>بوابة رسمية لتسجيل منشأتك عبر النفاذ الوطني.</td>
+                    </tr>
+                    <tr>
+                        <td>NEW LINE</td>
+                        <td><a href="https://newline.sa/" target="_blank">التسجيل</a></td>
+                        <td>مؤسسة تنظيم معارض تقدم خدمات تصميم أجنحة لمعرض البناء.</td>
+                    </tr>
+                    <tr>
+                        <td>خدماتنا | عين الرياض</td>
+                        <td><a href="https://www.eyeofriyadh.com/ar/services/main.php" target="_blank">التسجيل</a></td>
+                        <td>منصة تقدم خدمات إعلانية وتسجيل للمعارض.</td>
+                    </tr>
+                    <tr>
+                        <td>إدراج الشركات | عين الرياض</td>
+                        <td><a href="https://www.eyeofriyadh.com/ar/services/?sid=company-listing-1" target="_blank">التسجيل</a></td>
+                        <td>خدمة لإدراج شركتك في دليل الأعمال عبر عين الرياض.</td>
+                    </tr>
+                    <tr>
+                        <td>حساب جديد - الدليل السعودي</td>
+                        <td><a href="https://saudibusiness.directory/members/user_account_add.php?from=aHR0cHM6Ly9zYXVkaWJ1c2luZXNzLmRpcmVjdG9yeS9tZW1iZXJzL3VzZXJfb3JkZXJzX2FkZF9saXN0aW5nLnBocD9wcmljaW5nX2lkPTE%253D" target="_blank">التسجيل</a></td>
+                        <td>منصة لإنشاء حساب وإدراج شركتك في دليل الأعمال.</td>
+                    </tr>
+                    <tr>
+                        <td>اضف شركتك إلى دليل الأعمال السعودي | دليلي</td>
+                        <td><a href="https://daleli.sa/en/advertisments/add-company/" target="_blank">التسجيل</a></td>
+                        <td>دليل الأعمال الأكبر لإضافة شركتك محليًا.</td>
+                    </tr>
+                    <tr>
+                        <td>إضافة شركة - Find Saudi</td>
+                        <td><a href="https://www.findsaudi.com/ar/AddFeaturedCompany.aspx" target="_blank">التسجيل</a></td>
+                        <td>منصة لإضافة شركتك إلى دليل الشركات السعودية.</td>
+                    </tr>
+                    <tr>
+                        <td>تسجيل منشأة في الدليل - دليل الشركات السعودية</td>
+                        <td><a href="https://ksadirectory.net/%d8%aa%d8%b3%d8%ac%d9%8a%d9%84-%d9%85%d9%86%d8%b4%d8%a3%d8%a9-%d9%81%d9%8a-%d8%a7%d9%84%d8%af%d9%84%d9%8a%d9%84/" target="_blank">التسجيل</a></td>
+                        <td>خدمة لتسجيل منشأتك في دليل الشركات السعودية.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Steps Section -->
+    <section id="steps" class="py-5">
+        <div class="container">
+            <!-- دليل الأعمال السعودي -->
+            <h2 class="section-title">خطوات التسجيل في دليل الأعمال السعودي، أستاذ طلال</h2>
+            <p class="text-center mb-4">أستاذ طلال، اتبع هذه الخطوات البسيطة لتسجيل منشأتك في دليل الأعمال بسهولة:</p>
+            <div class="timeline">
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-search"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 1: اختر الدليل المناسب</h3>
+                        <ul>
+                            <li>حدد إذا كنت تريد الدليل الرسمي (المركز السعودي للأعمال) أو دليلًا خاصًا (مثل Business Wallet).</li>
+                            <li>ابدأ بزيارة الموقع الرسمي.</li>
+                        </ul>
+                        <a href="https://saudibusiness.gov.sa" class="btn btn-primary mt-2" target="_blank">الإجراء: زيارة الموقع</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-user-plus"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 2: إنشاء حسابك</h3>
+                        <ul>
+                            <li>استخدم النفاذ الوطني (أبشر) لتسجيل الدخول.</li>
+                            <li>إذا لم يكن لديك حساب أبشر، أنشئ واحدًا الآن.</li>
+                        </ul>
+                        <a href="https://absher.sa" class="btn btn-primary mt-2" target="_blank">الإجراء: إنشاء حساب أبشر</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-building"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 3: تسجيل منشأتك</h3>
+                        <ul>
+                            <li>اختر "تسجيل منشأة" أو "إصدار سجل تجاري".</li>
+                            <li>أدخل اسم منشأتك ونوع نشاطها.</li>
+                        </ul>
+                        <a href="https://www.saudibusiness.gov.sa/Identity/Account/Login" class="btn btn-primary mt-2" target="_blank">الإجراء: تسجيل المنشأة</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-info-circle"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 4: إضافة التفاصيل</h3>
+                        <ul>
+                            <li>أدخل العنوان الوطني الخاص بك.</li>
+                            <li>أضف رقم هاتف وبريد إلكتروني.</li>
+                            <li>صف نشاط منشأتك باختصار.</li>
+                        </ul>
+                        <a href="https://splonline.com.sa" class="btn btn-primary mt-2" target="_blank">الإجراء: الحصول على العنوان الوطني</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-credit-card"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 5: دفع الرسوم</h3>
+                        <ul>
+                            <li>سدد رسوم التسجيل عبر قنوات الدفع الإلكترونية.</li>
+                            <li>احتفظ بإيصال الدفع للرجوع إليه.</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-2">الإجراء: سداد الرسوم</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-handshake"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 6: انضم إلى الغرفة التجارية</h3>
+                        <ul>
+                            <li>سجل في الغرفة التجارية بمنطقتك.</li>
+                            <li>هذا سيفتح لك فرص تواصل وتسويق.</li>
+                        </ul>
+                        <a href="https://www.riyadhchamber.com" class="btn btn-primary mt-2" target="_blank">الإجراء: التسجيل بالغرفة</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- معرض البناء السعودي -->
+            <h2 class="section-title mt-5">خطوات التسجيل كعارض في معرض البناء السعودي</h2>
+            <p class="text-center mb-4">أستاذ طلال، إذا كنت ترغب في عرض منتجاتك في معرض البناء، إليك الخطوات:</p>
+            <div class="timeline">
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-globe"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 1: زيارة موقع المعرض</h3>
+                        <ul>
+                            <li>تحقق من مواعيد المعرض (مثل 5-7 مايو 2025).</li>
+                            <li>ابدأ بزيارة الموقع الرسمي.</li>
+                        </ul>
+                        <a href="https://www.eyeofriyadh.com" class="btn btn-primary mt-2" target="_blank">الإجراء: زيارة الموقع</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 2: تواصل مع المنظم</h3>
+                        <ul>
+                            <li>أرسل بريدًا إلكترونيًا إلى salehs@ananriyadh.com.</li>
+                            <li>أو اتصل على: 0533252533 أو 0506247782.</li>
+                        </ul>
+                        <a href="mailto:salehs@ananriyadh.com" class="btn btn-primary mt-2">الإجراء: إرسال بريد</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 3: تقديم طلب المشاركة</h3>
+                        <ul>
+                            <li>املأ نموذج التسجيل ببيانات منشأتك.</li>
+                            <li>حدد نوع المنتجات وحجم الجناح المطلوب.</li>
+                        </ul>
+                        <a href="https://newline.sa" class="btn btn-primary mt-2" target="_blank">الإجراء: طلب نموذج التسجيل</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-paint-brush"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 4: تصميم جناحك</h3>
+                        <ul>
+                            <li>تعاقد مع شركة تصميم مثل الخط الجديد.</li>
+                            <li>جهز تصميمًا لجناحك أو اطلب واحدًا.</li>
+                        </ul>
+                        <a href="https://newline.sa" class="btn btn-primary mt-2" target="_blank">الإجراء: التواصل مع شركة تصميم</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-credit-card"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 5: دفع الرسوم</h3>
+                        <ul>
+                            <li>سدد تكلفة الجناح حسب الحجم والموقع.</li>
+                            <li>استخدم التحويل البنكي أو الدفع الإلكتروني.</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-2">الإجراء: سداد الرسوم</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 6: تأكيد مشاركتك</h3>
+                        <ul>
+                            <li>ستتلقى تأكيدًا رسميًا مع تفاصيل الجناح.</li>
+                            <li>جهز موادك الترويجية للمعرض.</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-2">الإجراء: متابعة التأكيد</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- التسجيل كزائر -->
+            <h2 class="section-title mt-5">خطوات التسجيل كزائر في معرض البناء السعودي</h2>
+            <p class="text-center mb-4">أستاذ طلال، إذا كنت ترغب في زيارة المعرض فقط، إليك الخطوات البسيطة:</p>
+            <div class="timeline">
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-globe"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 1: التسجيل عبر الموقع</h3>
+                        <ul>
+                            <li>زر الموقع الرسمي واختر "تسجيل الزوار".</li>
+                            <li>أدخل اسمك، بريدك الإلكتروني، ورقم هاتفك.</li>
+                        </ul>
+                        <a href="https://www.eyeofriyadh.com" class="btn btn-primary mt-2" target="_blank">الإجراء: زيارة الموقع</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-credit-card"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 2: دفع رسوم الدخول</h3>
+                        <ul>
+                            <li>تحقق إذا كان هناك رسوم دخول.</li>
+                            <li>سدد الرسوم إلكترونيًا إذا لزم الأمر.</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-2">الإجراء: سداد الرسوم</a>
+                    </div>
+                </div>
+                <div class="timeline-item animate-section">
+                    <div class="timeline-icon"><i class="fas fa-ticket-alt"></i></div>
+                    <div class="timeline-content">
+                        <h3>الخطوة 3: استلام تذكرتك</h3>
+                        <ul>
+                            <li>ستتلقى تذكرة إلكترونية (QR code) عبر بريدك.</li>
+                            <li>احضر التذكرة إلى المعرض.</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-2">الإجراء: مراجعة البريد</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- Animation on Scroll -->
+    <script>
+        const animateSections = document.querySelectorAll('.animate-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animateSections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
